@@ -1,43 +1,84 @@
-import React, { useState } from 'react'
+import React, { useState ,useEffect} from 'react'
 import logo from './logo.svg'
 import './App.css'
+import axios from 'axios'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [v,setV]=useState(null)
+  const [dat,setDat]=useState(null);
+  
+  const handleSubmit=(e)=>{
+    e.preventDefault();
+    if(dat.id){
+      axios
+        .post(`http://localhost:8000/api/datas/${dat.id}/`,JSON.stringify(dat))
+        .then((e)=>{
+          console.log("added data to database")
+          setDat(null)
+        })  
+        .catch((err)=>{
+          console.error(err)
+        })
+    }
+    else{
+    //   axios
+    //     .post(`http://localhost:8000/api/datas/`,JSON.stringify(dat))
+    //     .then((e)=>{
+    //       console.log("added data to database")
+    //       setDat(null)
+    //     })
+    //     .catch((err)=>{
+    //       console.error(err)
+    //     })
+    // }
+        var data = JSON.stringify({
+          "datas": dat
+        });
+        
+        var config = {
+          method: 'post',
+          url: 'http://localhost:8000/api/datas/',
+          headers: { 
+            'Content-Type': 'application/json'
+          },
+          data : data
+        };
+        
+        axios(config)
+        .then(function (response) {
+          console.log("data added successfully");
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+  }
 
+  useEffect(()=>{
+    axios
+      .get('http://localhost:8000/api/datas/')
+      .then((e)=>{
+        console.log(e.data)
+        setV(e.data[0].datas)
+      })
+      .catch((err)=>{
+        console.error(err)
+      })
+  },[dat])
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.jsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+      <div className="heads">
+        <div>
+          <form onSubmit={handleSubmit}>
+            <input type="text" placeholder={dat} onChange={(e)=>{setDat(e.target.value)}}/>
+            <input type="submit" value="add" />
+          </form>
+        </div>
+        <div>
+          
+        </div>
+      </div>
     </div>
   )
 }
