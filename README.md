@@ -1,5 +1,5 @@
 ## To run application:
-### *1.Clone the repo*
+### *1. Clone the repo*
 
 ### *2. Go to server folder and run python3 manage.py runserver to start server*
 
